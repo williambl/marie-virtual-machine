@@ -56,6 +56,7 @@ class Machine(buffer: ShortBuffer) {
 
     fun step() {
         val currentPc = PC.get()
+        LOGGER.debug("0x{}", currentPc)
         this.read(currentPc)
         IR from MBR
         val opcode = IR.get().getTopNibble()

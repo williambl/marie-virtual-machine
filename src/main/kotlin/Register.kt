@@ -8,14 +8,14 @@ class Register(val name: String, val mask: UShort = UShort.MAX_VALUE, initialVal
 
     fun set(value: UShort) {
         this.value = value
-        LOGGER.debug("{} <- 0x{}", name, value.toString(16))
+        //LOGGER.debug("{} <- 0x{}", name, value.toString(16))
     }
 
     fun get(): UShort = value
 
     fun set(other: Register) {
         set(other.get())
-        LOGGER.debug("{} <- {}", name, other.name)
+        //LOGGER.debug("{} <- {}", name, other.name)
     }
 
     operator fun plus(other: Register): UShort {

@@ -35,5 +35,36 @@ enum class Instruction(val opcode: UByte, val run: Machine.(UShort) -> Unit) {
     }),
     Jump(0x9u, { operand ->
         PC from operand
+    }),
+    Clear(0xau, { operand ->
+        AC from 0u
+    }),
+    AddI(0xbu, { operand ->
+        read(operand)
+        read(MBR.get())
+        AC += MBR
+    }),
+    JumpI(0xcu, { operand ->
+        read(operand)
+        PC from MBR
+    }),
+    LoadI(0xdu, { operand ->
+        read(operand)
+        read(MBR.get())
+        AC from MBR
+    }),
+    StoreI(0xeu, { operand ->
+        read(operand)
+        MAR from MBR
+        MBR from AC
+        write()
+    }),
+    JnS(0x0u, { operand ->
+        MBR from PC
+        write(operand)
+        MBR from operand
+        AC from 1u
+        AC += MBR
+        PC from AC
     })
 }
