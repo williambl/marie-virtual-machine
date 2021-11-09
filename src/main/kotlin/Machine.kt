@@ -1,3 +1,4 @@
+import org.slf4j.LoggerFactory
 import java.nio.ShortBuffer
 import kotlin.system.exitProcess
 
@@ -43,14 +44,14 @@ class Machine(buffer: ShortBuffer) {
     }
 
     fun input(): UShort {
-        println("Input a value:")
+        LOGGER.info("Input a value:")
         IN from ((readLine() ?: "0").toInt(16).toUShort())
         return IN.get()
     }
 
     fun output(value: UShort) {
         OUT from value
-        println(value.toString(16))
+        LOGGER.info(value.toString(16))
     }
 
     fun step() {
@@ -70,5 +71,9 @@ class Machine(buffer: ShortBuffer) {
 
     private fun UShort.getTopNibble(): UByte {
         return (this.toUInt() shr 12).toUByte()
+    }
+
+    companion object {
+        val LOGGER = LoggerFactory.getLogger(Machine::class.java)
     }
 }
