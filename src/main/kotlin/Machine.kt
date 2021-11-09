@@ -1,36 +1,36 @@
 import org.slf4j.LoggerFactory
 import java.nio.ShortBuffer
+import kotlin.experimental.and
 import kotlin.system.exitProcess
 
 @Suppress("PropertyName")
-@OptIn(ExperimentalUnsignedTypes::class)
 class Machine(buffer: ShortBuffer) {
-    val PC = Register("PC", 0b0000111111111111u, 1u)
+    val PC = Register("PC", 0b0000111111111111, 1)
     val IR = Register("IR")
-    val OUT = Register("OUT", 0b0000000011111111u)
-    val IN = Register("IN", 0b0000000011111111u)
+    val OUT = Register("OUT", 0b0000000011111111)
+    val IN = Register("IN", 0b0000000011111111)
     val AC = Register("AC")
     val MBR = Register("MBR")
-    val MAR = Register("MAR", 0b0000111111111111u)
+    val MAR = Register("MAR", 0b0000111111111111)
 
-    private val memory = UShortArray(4096) { 0u }
+    private val memory = ShortArray(4096) { 0 }
 
     init {
         var i = 0
         while (buffer.hasRemaining()) {
-            memory[i++] = buffer.get().toUShort()
+            memory[i++] = buffer.get()
             println(memory[i - 1].toString(2))
         }
     }
 
-    fun read(address: UShort) {
+    fun read(address: Short) {
         MAR from address
         read()
     }
 
     fun read() = MBR from (memory[MAR.get().toInt()])
 
-    fun write(address: UShort) {
+    fun write(address: Short) {
         MAR from (address)
         write()
     }
@@ -43,13 +43,13 @@ class Machine(buffer: ShortBuffer) {
         exitProcess(0)
     }
 
-    fun input(): UShort {
+    fun input(): Short {
         LOGGER.info("Input a value:")
-        IN from ((readLine() ?: "0").toInt(16).toUShort())
+        IN from ((readLine() ?: "0").toInt(16).toShort())
         return IN.get()
     }
 
-    fun output(value: UShort) {
+    fun output(value: Short) {
         OUT from value
         LOGGER.info(value.toString(16))
     }
@@ -60,18 +60,18 @@ class Machine(buffer: ShortBuffer) {
         this.read(currentPc)
         IR from MBR
         val opcode = IR.get().getTopNibble()
-        val operand = IR.get() and 0b0000111111111111u
+        val operand = IR.get() and 0b0000111111111111
 
         (Instruction.values().find { it.opcode == opcode } ?: halt())
             .run(this, operand)
 
         if (PC.get() == currentPc) {
-            PC += 1u
+            PC += 1
         }
     }
 
-    private fun UShort.getTopNibble(): UByte {
-        return (this.toUInt() shr 12).toUByte()
+    private fun Short.getTopNibble(): Byte {
+        return (this.toInt() shr 12).toByte()
     }
 
     companion object {
