@@ -1,4 +1,3 @@
-import java.nio.ByteBuffer
 import java.nio.ShortBuffer
 import kotlin.system.exitProcess
 
@@ -23,21 +22,19 @@ class Machine(buffer: ShortBuffer) {
         }
     }
 
-    fun readMemory(address: UShort) {
-        MAR.set(address)
-        readMemory()
+    fun read(address: UShort) {
+        MAR from address
+        read()
     }
 
-    fun readMemory() {
-        MBR.set(memory[MAR.get().toInt()])
+    fun read() = MBR from (memory[MAR.get().toInt()])
+
+    fun write(address: UShort) {
+        MAR from (address)
+        write()
     }
 
-    fun writeMemory(address: UShort) {
-        MAR.set(address)
-        writeMemory()
-    }
-
-    fun writeMemory() {
+    fun write() {
         memory[MAR.get().toInt()] = MBR.get()
     }
 
@@ -47,19 +44,19 @@ class Machine(buffer: ShortBuffer) {
 
     fun input(): UShort {
         println("Input a value:")
-        IN.set((readLine() ?: "0").toInt(16).toUShort())
+        IN from ((readLine() ?: "0").toInt(16).toUShort())
         return IN.get()
     }
 
     fun output(value: UShort) {
-        OUT.set(value)
+        OUT from value
         println(value.toString(16))
     }
 
     fun step() {
         val currentPc = PC.get()
-        readMemory(currentPc)
-        IR.set(MBR.get())
+        this.read(currentPc)
+        IR from MBR
         val opcode = IR.get().getTopNibble()
         val operand = IR.get() and 0b0000111111111111u
 
@@ -67,7 +64,7 @@ class Machine(buffer: ShortBuffer) {
             .run(this, operand)
 
         if (PC.get() == currentPc) {
-            PC.set((PC.get() + 1u).toUShort())
+            PC += 1u
         }
     }
 
