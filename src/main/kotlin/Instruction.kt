@@ -5,10 +5,14 @@ enum class Instruction(val opcode: UByte, val run: Machine.(UShort) -> Unit) {
     }),
     Store(0x2u, { operand ->
         MBR.set(AC.get())
+        println(operand)
+        println(MBR.get().toString(2))
         writeMemory(operand)
     }),
     Add(0x3u, { operand ->
         readMemory(operand)
+        println(operand)
+        println(MBR.get().toString(2))
         AC.set((AC.get() + MBR.get()).toUShort())
     }),
     Subt(0x4u, { operand ->
@@ -16,10 +20,10 @@ enum class Instruction(val opcode: UByte, val run: Machine.(UShort) -> Unit) {
         AC.set((AC.get() - MBR.get()).toUShort())
     }),
     Input(0x5u, {
-        AC.set(IN.get())
+        AC.set(input())
     }),
     Output(0x6u, {
-        OUT.set(AC.get())
+        output(AC.get())
     }),
     Halt(0x7u, {
         halt()
