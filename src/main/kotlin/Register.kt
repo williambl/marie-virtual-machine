@@ -1,7 +1,7 @@
 import org.slf4j.LoggerFactory
 import kotlin.experimental.and
 
-class Register(val name: String, val mask: Short = Short.MAX_VALUE, initialValue: Short = 0) {
+class Register(val name: String, val mask: Short = 0b1111111111111111u.toShort(), initialValue: Short = 0) {
     private var value: Short = initialValue
     set(value) {
         field = value and mask

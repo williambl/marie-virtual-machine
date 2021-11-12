@@ -19,7 +19,7 @@ class Machine(buffer: ShortBuffer) {
         var i = 0
         while (buffer.hasRemaining()) {
             memory[i++] = buffer.get()
-            println(memory[i - 1].toString(2))
+            LOGGER.debug(memory[i - 1].toUShort().toString(16))
         }
     }
 
@@ -56,22 +56,19 @@ class Machine(buffer: ShortBuffer) {
 
     fun step() {
         val currentPc = PC.get()
-        LOGGER.debug("0x{}", currentPc)
+        PC += 1
         this.read(currentPc)
         IR from MBR
-        val opcode = IR.get().getTopNibble()
-        val operand = IR.get() and 0b0000111111111111
+        val currentIr = IR.get()
+        val opcode = currentIr.getTopNibble()
+        val operand = currentIr and 0b0000111111111111
 
         (Instruction.values().find { it.opcode == opcode } ?: halt())
             .run(this, operand)
-
-        if (PC.get() == currentPc) {
-            PC += 1
-        }
     }
 
     private fun Short.getTopNibble(): Byte {
-        return (this.toInt() shr 12).toByte()
+        return (this.toUInt() shr 12).toByte() and 0b00001111
     }
 
     companion object {
